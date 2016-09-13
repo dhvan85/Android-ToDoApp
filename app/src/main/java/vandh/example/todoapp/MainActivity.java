@@ -16,90 +16,104 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    ArrayList<String> todoItems;
-    ArrayAdapter<String> aToDoAdapter;
-    ListView lvItems;
-    EditText edText;
-    private final int REQUEST_CODE = 20;
+    private final String FILE_NAME = "todo.txt";
+    private final int REQUEST_CODE = 1;
+
+    private ArrayList<String> todoItemList = new ArrayList<>();
+    private ArrayAdapter<String> todoAdapter;
+    private ListView itemListView;
+    private EditText newItemText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        populateArrayItems();
+        findControls();
+        initControls();
+    }
 
-        lvItems = (ListView) findViewById(R.id.lvItems);
-        edText = (EditText) findViewById(R.id.etEditText);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data != null) {
+            todoItemList.set(data.getIntExtra("index", -1), data.getStringExtra("newText"));
+            todoAdapter.notifyDataSetChanged();
 
-        lvItems.setAdapter(aToDoAdapter);
-        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            saveItemsToFile();
+        }
+    }
+
+    private void findControls() {
+        this.itemListView = (ListView) findViewById(R.id.itemListView);
+        this.newItemText = (EditText) findViewById(R.id.newItemText);
+    }
+
+    private void initControls() {
+        // init adapter
+        readItemsFromFile();
+        this.todoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, this.todoItemList);
+
+        // init ListView
+        this.itemListView.setAdapter(todoAdapter);
+
+        // click to edit
+        this.itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                openEditActivity(position, todoItems.get(position));
+                startEditActivity(position, todoItemList.get(position));
             }
         });
 
-        lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        // long-click to remove
+        itemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                todoItems.remove(position);
-                aToDoAdapter.notifyDataSetChanged();
-                writeItems();
+                todoItemList.remove(position);
+                todoAdapter.notifyDataSetChanged();
+
+                saveItemsToFile();
                 return true;
             }
         });
     }
 
-    private void openEditActivity(int position, String text) {
+    private void startEditActivity(int index, String text) {
         Intent i = new Intent(MainActivity.this, EditItemActivity.class);
 
-        i.putExtra("position", position);
-        i.putExtra("editText", text);
+        i.putExtra("index", index);
+        i.putExtra("currentText", text);
+
         startActivityForResult(i, REQUEST_CODE);
     }
 
-    private void populateArrayItems() {
-        readItems();
-        aToDoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todoItems);
-    }
-
-    private void readItems() {
+    private void readItemsFromFile() {
         File filesDir = getFilesDir();
-        File file = new File(filesDir, "todo.txt");
+        File file = new File(filesDir, FILE_NAME);
 
         try {
             if (file.exists()) {
-                todoItems = new ArrayList<String>(FileUtils.readLines(file));
-            } else {
-                todoItems = new ArrayList<String>();
+                todoItemList = new ArrayList<>(FileUtils.readLines(file));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void writeItems() {
+    private void saveItemsToFile() {
         File filesDir = getFilesDir();
-        File file = new File(filesDir, "todo.txt");
+        File file = new File(filesDir, FILE_NAME);
 
         try {
-            FileUtils.writeLines(file, todoItems);
+            FileUtils.writeLines(file, todoItemList);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void onAddItem(View view) {
-        aToDoAdapter.add(edText.getText().toString());
-        edText.setText("");
-        writeItems();
-    }
+        todoAdapter.add(newItemText.getText().toString());
+        newItemText.setText("");
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        todoItems.set(data.getIntExtra("position", -1), data.getStringExtra("newValue"));
-        aToDoAdapter.notifyDataSetChanged();
-        writeItems();
+        saveItemsToFile();
     }
 }

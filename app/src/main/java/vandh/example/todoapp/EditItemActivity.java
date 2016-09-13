@@ -7,35 +7,35 @@ import android.view.View;
 import android.widget.EditText;
 
 public class EditItemActivity extends AppCompatActivity {
+    private int index;
+    private EditText editItemText;
 
-    private EditText textItemName;
-    private int position;
-
-    private void findItems() {
-        textItemName = (EditText) findViewById(R.id.textItemName);
+    private void findControls() {
+        this.editItemText = (EditText) findViewById(R.id.editItemText);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
-        findItems();
 
-        String text = getIntent().getStringExtra("editText");
-        position = getIntent().getIntExtra("position", -1);
+        findControls();
+        initControls();
+    }
 
-        textItemName.setText(text);
-        textItemName.setSelection(textItemName.getText().length());
+    private void initControls() {
+        this.index = getIntent().getIntExtra("index", -1);
+        this.editItemText.setText(getIntent().getStringExtra("currentText"));
+        this.editItemText.setSelection(this.editItemText.getText().length());
     }
 
     public void onSubmit(View v) {
         Intent i = new Intent();
 
-        i.putExtra("position", position);
-        i.putExtra("newValue", textItemName.getText().toString());
+        i.putExtra("index", this.index);
+        i.putExtra("newText", this.editItemText.getText().toString());
 
-        setResult(10, i);
+        setResult(1, i);
         this.finish();
-
     }
 }
