@@ -14,20 +14,151 @@
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:ems="10"
-        android:id="@+id/editItemText"
+        android:id="@+id/titleText"
         android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/saveButton"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentEnd="true"
+        android:width="250dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:hint="Enter task title" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Save"
         android:id="@+id/saveButton"
-        android:layout_below="@+id/editItemText"
+        android:onClick="onSubmit"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <NumberPicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/numberPicker1"
+        android:layout_below="@+id/titleText"
+        android:layout_alignRight="@+id/titleText"
+        android:layout_alignEnd="@+id/titleText"
+        android:layout_marginTop="20dp" />
+
+    <NumberPicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/numberPicker2"
+        android:layout_below="@+id/titleText"
+        android:layout_marginRight="20dp"
+        android:layout_toStartOf="@id/numberPicker1"
+        android:layout_marginTop="20dp" />
+
+    <NumberPicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/numberPicker3"
+        android:layout_below="@+id/titleText"
+        android:layout_toStartOf="@id/numberPicker2"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/noteText"
+        android:gravity="left"
+        android:layout_below="@+id/textView3"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:onClick="onSubmit" />
+        android:layout_marginTop="20dp"
+        android:width="250dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="Enter notes"
+        android:layout_above="@+id/saveButton" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="3"
+        android:id="@+id/textView3"
+        android:layout_below="@+id/numberPicker1"
+        android:layout_alignRight="@+id/noteText"
+        android:layout_alignEnd="@+id/noteText"
+        android:layout_toRightOf="@+id/numberPicker2"
+        android:layout_toEndOf="@+id/numberPicker2"
+        android:layout_marginTop="20dp"
+        android:height="50dp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:textSize="25sp"
+        android:gravity="center_vertical|center_horizontal"
+        android:background="#677cff"
+        android:onClick="onClick_Priority"
+        android:autoText="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="2"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/numberPicker2"
+        android:layout_alignRight="@+id/numberPicker2"
+        android:layout_alignEnd="@+id/numberPicker2"
+        android:layout_toRightOf="@+id/numberPicker3"
+        android:layout_toEndOf="@+id/numberPicker3"
+        android:layout_marginTop="20dp"
+        android:height="50dp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:textSize="25sp"
+        android:gravity="center_vertical|center"
+        android:background="#3c3cff"
+        android:onClick="onClick_Priority" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="1"
+        android:id="@+id/textView1"
+        android:layout_below="@+id/numberPicker3"
+        android:layout_alignRight="@+id/numberPicker3"
+        android:layout_alignEnd="@+id/numberPicker3"
+        android:layout_alignLeft="@+id/numberPicker3"
+        android:layout_alignStart="@+id/numberPicker3"
+        android:layout_marginTop="20dp"
+        android:height="50dp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:textSize="25sp"
+        android:gravity="center_vertical|center"
+        android:background="#ff3939"
+        android:onClick="onClick_Priority" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Deadline"
+        android:id="@+id/textView4"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/numberPicker3"
+        android:layout_toLeftOf="@+id/numberPicker3"
+        android:layout_toStartOf="@+id/numberPicker3"
+        android:textSize="20sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Priority"
+        android:id="@+id/textView5"
+        android:textSize="20sp"
+        android:layout_alignTop="@+id/textView1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>

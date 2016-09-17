@@ -5,24 +5,20 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private final String FILE_NAME = "todo.txt";
     private final int REQUEST_CODE = 1;
+    private final String FILE_NAME = "todo.txt";
 
-    private ArrayList<String> todoItemList = new ArrayList<>();
-    private ArrayAdapter<String> todoAdapter;
     private ListView itemListView;
     private EditText newItemText;
+    private ToDoItemAdapter todoAdapter;
+    private ArrayList<ToDoItem> todoItemList = new ArrayList<>();
+    private TaskDbHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +32,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
-            todoItemList.set(data.getIntExtra("index", -1), data.getStringExtra("newText"));
-            todoAdapter.notifyDataSetChanged();
+            ToDoItem item = (ToDoItem) data.getSerializableExtra("item");
 
-            saveItemsToFile();
+            if (item.getPosition() < 0) {
+                todoItemList.add(todoItemList.size(), item);
+                db.createItem(item);
+            } else {
+                todoItemList.set(item.getPosition(), item);
+                db.updateItem(item);
+            }
+
+            todoAdapter.notifyDataSetChanged();
         }
     }
 
@@ -49,9 +52,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initControls() {
+        db = TaskDbHelper.getInstance(getApplicationContext());
         // init adapter
-        readItemsFromFile();
-        this.todoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, this.todoItemList);
+        buildToDoItemList();
+        this.todoAdapter = new ToDoItemAdapter(this, this.todoItemList);
 
         // init ListView
         this.itemListView.setAdapter(todoAdapter);
@@ -60,7 +64,10 @@ public class MainActivity extends AppCompatActivity {
         this.itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startEditActivity(position, todoItemList.get(position));
+                ToDoItem item = todoItemList.get(position);
+
+                item.setPosition(position);
+                startEditActivity(item);
             }
         });
 
@@ -68,52 +75,28 @@ public class MainActivity extends AppCompatActivity {
         itemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                db.deleteItem(todoItemList.get(position));
+
                 todoItemList.remove(position);
                 todoAdapter.notifyDataSetChanged();
 
-                saveItemsToFile();
                 return true;
             }
         });
     }
 
-    private void startEditActivity(int index, String text) {
+    public void onAddItem(View view) {
+        startEditActivity(null);
+    }
+
+    private void startEditActivity(ToDoItem toDoItem) {
         Intent i = new Intent(MainActivity.this, EditItemActivity.class);
 
-        i.putExtra("index", index);
-        i.putExtra("currentText", text);
-
+        i.putExtra("item", toDoItem);
         startActivityForResult(i, REQUEST_CODE);
     }
 
-    private void readItemsFromFile() {
-        File filesDir = getFilesDir();
-        File file = new File(filesDir, FILE_NAME);
-
-        try {
-            if (file.exists()) {
-                todoItemList = new ArrayList<>(FileUtils.readLines(file));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void saveItemsToFile() {
-        File filesDir = getFilesDir();
-        File file = new File(filesDir, FILE_NAME);
-
-        try {
-            FileUtils.writeLines(file, todoItemList);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void onAddItem(View view) {
-        todoAdapter.add(newItemText.getText().toString());
-        newItemText.setText("");
-
-        saveItemsToFile();
+    private void buildToDoItemList() {
+        this.todoItemList = db.getAllUndone();
     }
 }
