@@ -26,8 +26,8 @@ The following **optional** features are implemented:
 The following **additional** features are implemented:
 
 * [x] Sort task by Priority > DueDate > Task title
-* [x] Use AlertDialog to confirm before delete
-* [x] Show toast message after check done task
+* [x] Use AlertDialog to confirm before deleting
+* [x] Show toast message after checking done task
 
 ## Video Walkthrough
 
