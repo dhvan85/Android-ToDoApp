@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -45,6 +48,29 @@ public class EditItemActivity extends AppCompatActivity {
 
         findControls();
         initControls();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.edit_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_item:
+                submit(false);
+                break;
+            case R.id.cancel_item:
+                finish();
+                break;
+            case R.id.done_item:
+                submit(true);
+                break;
+        }
+        return true;
     }
 
     private void initControls() {
@@ -104,7 +130,7 @@ public class EditItemActivity extends AppCompatActivity {
             priority = 3;
     }
 
-    public void onSubmit(View v) {
+    public void submit(boolean status) {
         Intent i = new Intent();
 
         if (item == null) {
@@ -120,6 +146,8 @@ public class EditItemActivity extends AppCompatActivity {
 
         item.DueDate = calendar.getTime();
         item.Priority = priority;
+
+        item.Status = status;
 
         i.putExtra("item", item);
         setResult(1, i);
