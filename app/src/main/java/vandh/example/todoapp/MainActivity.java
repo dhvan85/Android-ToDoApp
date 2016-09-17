@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
                     todoItemList.set(item.getPosition(), item);
                 } else {
                     todoItemList.remove(item.getPosition());
+                    Toast.makeText(getApplicationContext(), "Congratulations for finishing it!", Toast.LENGTH_LONG).show();
                 }
 
                 db.updateItem(item);
